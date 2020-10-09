@@ -1,10 +1,12 @@
 [package]
 name = "koreanbots-rs"
-version = "0.2.0"
+version = "0.2.1"
 description = "Koreanbots API wrapper library"
 repository = "https://github.com/AkiaCode/Koreanbots.rs.git"
 authors = ["Catry <catry.me@gmail.com>"]
 edition = "2018"
+documentation = "https://github.com/AkiaCode/Koreanbots.rs#example"
+readme = "README.md"
 license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
