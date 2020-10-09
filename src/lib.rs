@@ -86,6 +86,6 @@ fn check() {
     if resp.header("x-ratelimit-remaining") == Some("0") || resp.header("x-ratelimit-remaining") >= resp.header("x-ratelimit-limit") {
         let secs_string = resp.header("x-ratelimit-reset").unwrap().to_string();
         let secs_number:u64 = secs_string.trim().parse().unwrap();
-       return print!("you're now rate limited. retrying after {:?}ms", Duration::from_secs(secs_number));   
+       return println!("you're now rate limited. retrying after {:?}ms", Duration::from_secs(secs_number));   
     }
 }
