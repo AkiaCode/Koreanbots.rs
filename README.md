@@ -15,6 +15,10 @@ fn main() {
     // {"message":"jwt malformed","name":"JsonWebTokenError"}
     println!("{}", post_bot_servers("KOREANBOTS_TOKEN", 1));
     // {"message":"jwt malformed","name":"JsonWebTokenError"}
+    println!("{}", getbotsbycategory("관리", Some("1")));
+    println!("{}", getserverwidget("387548561816027138"));
+    println!("{}", getvotewidget("387548561816027138"));
+    println!("{}", getsearchbots("원더봇", Some("1")));
 }
 
 ```
