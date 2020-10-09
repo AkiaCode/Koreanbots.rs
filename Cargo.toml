@@ -1,6 +1,6 @@
 [package]
 name = "koreanbots-rs"
-version = "0.1.0"
+version = "0.1.1"
 description = "Koreanbots API wrapper library"
 repository = "https://github.com/AkiaCode/Koreanbots.rs.git"
 authors = ["Catry <catry.me@gmail.com>"]
