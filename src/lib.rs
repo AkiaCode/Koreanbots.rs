@@ -1,10 +1,10 @@
 use ureq::{self, json};
 use std::time::Duration;
 
-static BASE: &str = "https://api.koreanbots.dev";
-static GET_BOTS: &str = "/bots/get";
-static GET_VOTES_MYBOT: &str = "/bots/voted/";
-static POST_BOT_SERVERS: &str = "/bots/servers";
+const BASE: &str = "https://api.koreanbots.dev";
+const GET_BOTS: &str = "/bots/get";
+const GET_VOTES_MYBOT: &str = "/bots/voted/";
+const POST_BOT_SERVERS: &str = "/bots/servers";
 
 /// It is a function that can get various information such as ranking of all bots list. (Page default is 1)
 ///
