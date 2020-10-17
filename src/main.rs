@@ -1,5 +1,3 @@
-#[warn(unused_imports)]
-use koreanbots_rs::*;
+use koreanbots_rs::rest::*; 
 
-fn main() {
-}
+fn main() {}
