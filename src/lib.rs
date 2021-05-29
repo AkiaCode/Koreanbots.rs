@@ -1,4 +1,4 @@
-//#[cfg(feature = "blocking")]
+#[cfg(feature = "blocking")]
 pub mod blocking;
 pub mod model;
 
