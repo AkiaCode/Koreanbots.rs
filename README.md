@@ -1,5 +1,6 @@
 # koreanbots-rs
 
+## Notice: Change koreanbots-rs to koreanbots
 
 ## Example
 
