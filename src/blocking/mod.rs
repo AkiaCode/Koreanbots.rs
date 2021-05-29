@@ -1,22 +1,12 @@
-//#[cfg(feature = "blocking")]
-pub mod blocking;
-pub mod model;
-
-const BASE_URL: &str = "https://koreanbots.dev/api/v2";
-
 use std::collections::HashMap;
 
-use model::UserInfo;
 use reqwest::{
     header::HeaderMap,
     header::{AUTHORIZATION, CONTENT_TYPE},
     Url,
 };
 
-use crate::model::{
-    response::{Data, Response, ResponseUpdate},
-    Bot, VoteCheck, WidgetQuery, WidgetType,
-};
+use crate::{BASE_URL, model::{Bot, UserInfo, VoteCheck, WidgetQuery, WidgetType, response::{Data, Response, ResponseUpdate}}};
 
 pub struct Client {
     authorization: &'static str,
@@ -27,16 +17,14 @@ impl Client {
         Self { authorization }
     }
 
-    pub async fn get_bot(&self, bot_id: &str) -> Response<Bot> {
-        let mut url = String::from("bots/");
-        url.push_str(bot_id);
-        let fetch = Client::_fetch("GET", &url, None, None, None);
-        let json: Response<Bot> = serde_json::from_str(&fetch.await.text().await.unwrap()).unwrap();
+    pub fn get_bot(&self, bot_id: &str) -> Response<Bot> {
+        let fetch = Client::_fetch("GET", format!("bots/{}", bot_id).as_str(), None, None, None);
+        let json: Response<Bot> = serde_json::from_str(&fetch.text().unwrap()).unwrap();
 
         json
     }
 
-    pub async fn search_bot(&self, search: &str, page: Option<usize>) -> Response<Data<Bot>> {
+    pub fn search_bot(&self, search: &str, page: Option<usize>) -> Response<Data<Bot>> {
         let mut query = HashMap::new();
         query.insert("query", search.to_string());
         if let Some(page) = page {
@@ -46,13 +34,12 @@ impl Client {
         }
         let fetch = Client::_fetch("GET", "search/bots", None, Some(query), None);
 
-        let json: Response<Data<Bot>> =
-            serde_json::from_str(&fetch.await.text().await.unwrap()).unwrap();
+        let json: Response<Data<Bot>> = serde_json::from_str(&fetch.text().unwrap()).unwrap();
 
         json
     }
 
-    pub async fn get_votes_list(&self, page: Option<usize>) -> Response<Data<Bot>> {
+    pub fn get_votes_list(&self, page: Option<usize>) -> Response<Data<Bot>> {
         let mut query = HashMap::new();
         if let Some(page) = page {
             query.insert("page", page.to_string());
@@ -61,40 +48,39 @@ impl Client {
         }
         let fetch = Client::_fetch("GET", "list/bots/votes", None, Some(query), None);
 
-        let json: Response<Data<Bot>> =
-            serde_json::from_str(&fetch.await.text().await.unwrap()).unwrap();
+        let json: Response<Data<Bot>> = serde_json::from_str(&fetch.text().unwrap()).unwrap();
 
         json
     }
 
-    pub async fn get_new_bot_list(&self) -> Response<Data<Bot>> {
+    pub fn get_new_bot_list(&self) -> Response<Data<Bot>> {
         let fetch = Client::_fetch("GET", "list/bots/new", None, None, None);
 
-        let json: Response<Data<Bot>> =
-            serde_json::from_str(&fetch.await.text().await.unwrap()).unwrap();
+        let json: Response<Data<Bot>> = serde_json::from_str(&fetch.text().unwrap()).unwrap();
 
         json
     }
 
-    pub async fn get_vote_check(&self, bot_id: &str, user_id: &str) -> Response<VoteCheck> {
+    pub fn get_vote_check(&self, bot_id: &str, user_id: &str) -> Response<VoteCheck> {
         let mut header = HeaderMap::new();
         header.insert(AUTHORIZATION, self.authorization.parse().unwrap());
         header.insert(CONTENT_TYPE, "application/json".parse().unwrap());
         let mut query = HashMap::new();
         query.insert("userID", user_id.to_string());
-        let mut url = String::from("bots/");
-        url.push_str(bot_id);
-        url.push_str("/vote");
+        let fetch = Client::_fetch(
+            "GET",
+            format!("bots/{}/vote", bot_id).as_str(),
+            Some(header),
+            Some(query),
+            None,
+        );
 
-        let fetch = Client::_fetch("GET", &url, Some(header), Some(query), None);
-
-        let json: Response<VoteCheck> =
-            serde_json::from_str(&fetch.await.text().await.unwrap()).unwrap();
+        let json: Response<VoteCheck> = serde_json::from_str(&fetch.text().unwrap()).unwrap();
 
         json
     }
 
-    pub async fn update_servers(&self, bot_id: &str, servers: usize) -> ResponseUpdate {
+    pub fn update_servers(&self, bot_id: &str, servers: usize) -> ResponseUpdate {
         let mut header = HeaderMap::new();
         header.insert(AUTHORIZATION, self.authorization.parse().unwrap());
         header.insert(CONTENT_TYPE, "application/json".parse().unwrap());
@@ -102,30 +88,33 @@ impl Client {
         let mut json = HashMap::new();
         json.insert("servers", servers.to_string());
 
-        let mut url = String::from("bots/");
-        url.push_str(bot_id);
-        url.push_str("/stats");
+        let fetch = Client::_fetch(
+            "POST",
+            format!("bots/{}/stats", bot_id).as_str(),
+            Some(header),
+            None,
+            Some(json),
+        );
 
-        let fetch = Client::_fetch("POST", &url, Some(header), None, Some(json));
-
-        let json: ResponseUpdate =
-            serde_json::from_str(&fetch.await.text().await.unwrap()).unwrap();
-
-        json
-    }
-
-    pub async fn get_user(&self, user_id: &str) -> Response<UserInfo> {
-        let mut url = String::from("users/");
-        url.push_str(user_id);
-
-        let fetch = Client::_fetch("GET", &url, None, None, None);
-        let json: Response<UserInfo> =
-            serde_json::from_str(&fetch.await.text().await.unwrap()).unwrap();
+        let json: ResponseUpdate = serde_json::from_str(&fetch.text().unwrap()).unwrap();
 
         json
     }
 
-    pub async fn get_bot_widget(
+    pub fn get_user(&self, user_id: &str) -> Response<UserInfo> {
+        let fetch = Client::_fetch(
+            "GET",
+            format!("users/{}", user_id).as_str(),
+            None,
+            None,
+            None,
+        );
+        let json: Response<UserInfo> = serde_json::from_str(&fetch.text().unwrap()).unwrap();
+
+        json
+    }
+
+    pub fn get_bot_widget(
         &self,
         bot_id: &str,
         widget_type: WidgetType,
@@ -143,25 +132,26 @@ impl Client {
                 None
             }
         };
-        let mut url = String::from("widget/bots/");
-        url.push_str(&widget_type.to_string());
-        url.push('/');
-        url.push_str(bot_id);
-        url.push_str(".svg");
 
-        let fetch = Client::_fetch("GET", &url, None, query, None);
+        let fetch = Client::_fetch(
+            "GET",
+            format!("widget/bots/{}/{}.svg", widget_type.to_string(), bot_id).as_str(),
+            None,
+            query,
+            None,
+        );
 
-        fetch.await.url().to_string()
+        fetch.url().to_string()
     }
 
-    async fn _fetch(
+    fn _fetch(
         method: &str,
         path: &str,
         headers: Option<HeaderMap>,
         query: Option<HashMap<&str, String>>,
         json: Option<HashMap<&str, String>>,
-    ) -> reqwest::Response {
-        let client = reqwest::Client::new();
+    ) -> reqwest::blocking::Response {
+        let client = reqwest::blocking::Client::new();
         let url = {
             let path_url = format!("{}/{}", BASE_URL, path);
             if let Some(query) = query {
@@ -177,20 +167,14 @@ impl Client {
             "GET" => {
                 if let Some(headers) = headers {
                     if let Some(json) = json {
-                        client
-                            .get(url)
-                            .headers(headers)
-                            .json(&json)
-                            .send()
-                            .await
-                            .unwrap()
+                        client.get(url).headers(headers).json(&json).send().unwrap()
                     } else {
-                        client.get(url).headers(headers).send().await.unwrap()
+                        client.get(url).headers(headers).send().unwrap()
                     }
                 } else if let Some(json) = json {
-                    client.get(url).json(&json).send().await.unwrap()
+                    client.get(url).json(&json).send().unwrap()
                 } else {
-                    client.get(url).send().await.unwrap()
+                    client.get(url).send().unwrap()
                 }
             }
             "POST" => {
@@ -201,15 +185,14 @@ impl Client {
                             .headers(headers)
                             .json(&json)
                             .send()
-                            .await
                             .unwrap()
                     } else {
-                        client.post(url).headers(headers).send().await.unwrap()
+                        client.post(url).headers(headers).send().unwrap()
                     }
                 } else if let Some(json) = json {
-                    client.post(url).json(&json).send().await.unwrap()
+                    client.post(url).json(&json).send().unwrap()
                 } else {
-                    client.post(url).send().await.unwrap()
+                    client.post(url).send().unwrap()
                 }
             }
             _ => panic!(""),

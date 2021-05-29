@@ -1,6 +1,6 @@
 [package]
-name = "koreanbots-rs"
-version = "0.2.1"
+name = "koreanbots"
+version = "2.0.0"
 description = "Koreanbots API wrapper library"
 repository = "https://github.com/AkiaCode/Koreanbots.rs.git"
 authors = ["Catry <catry.me@gmail.com>"]
@@ -13,4 +13,6 @@ license = "Apache-2.0"
 
 
 [dependencies]
-ureq = { version = "1.5.1", features = ["json"]}
+reqwest = { version = "0.11.3", features=["blocking", "json"]}
+serde = { version = "1.0.126", features=["derive"]}
+serde_json = "1.0.64"
