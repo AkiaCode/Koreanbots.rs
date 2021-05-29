@@ -14,4 +14,8 @@ fn main() {
 
 ```
 
+``toml
+koreanbot = { version = "2.0.1", features=["blocking"]}
+```
+
 License: Apache-2.0
