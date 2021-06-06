@@ -6,7 +6,13 @@ use reqwest::{
     Url,
 };
 
-use crate::{BASE_URL, model::{Bot, UserInfo, VoteCheck, WidgetQuery, WidgetType, response::{Data, Response, ResponseUpdate}}};
+use crate::{
+    model::{
+        response::{Data, Response, ResponseUpdate},
+        Bot, UserInfo, VoteCheck, WidgetQuery, WidgetType,
+    },
+    BASE_URL,
+};
 
 pub struct Client {
     authorization: &'static str,
@@ -80,13 +86,22 @@ impl Client {
         json
     }
 
-    pub fn update_servers(&self, bot_id: &str, servers: usize) -> ResponseUpdate {
+    pub fn update(
+        &self,
+        bot_id: &str,
+        servers: Option<usize>,
+        shards: Option<usize>,
+    ) -> ResponseUpdate {
         let mut header = HeaderMap::new();
         header.insert(AUTHORIZATION, self.authorization.parse().unwrap());
         header.insert(CONTENT_TYPE, "application/json".parse().unwrap());
 
         let mut json = HashMap::new();
-        json.insert("servers", servers.to_string());
+        if let Some(servers) = servers {
+            json.insert("servers", servers.to_string());
+        } else if let Some(shards) = shards {
+            json.insert("shards", shards.to_string());
+        }
 
         let fetch = Client::_fetch(
             "POST",

@@ -94,13 +94,22 @@ impl Client {
         json
     }
 
-    pub async fn update_servers(&self, bot_id: &str, servers: usize) -> ResponseUpdate {
+    pub async fn update(
+        &self,
+        bot_id: &str,
+        servers: Option<usize>,
+        shards: Option<usize>,
+    ) -> ResponseUpdate {
         let mut header = HeaderMap::new();
         header.insert(AUTHORIZATION, self.authorization.parse().unwrap());
         header.insert(CONTENT_TYPE, "application/json".parse().unwrap());
 
         let mut json = HashMap::new();
-        json.insert("servers", servers.to_string());
+        if let Some(servers) = servers {
+            json.insert("servers", servers.to_string());
+        } else if let Some(shards) = shards {
+            json.insert("shards", shards.to_string());
+        }
 
         let mut url = String::from("bots/");
         url.push_str(bot_id);
