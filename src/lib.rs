@@ -1,4 +1,3 @@
-#[cfg(feature = "blocking")]
 pub mod blocking;
 pub mod model;
 
